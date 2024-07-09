@@ -1,5 +1,7 @@
 using System.Dynamic;
 using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace PathCat.Tests;
 
@@ -228,6 +230,23 @@ public class PathCatTests
     }
 
     [Fact]
+    public void BuildUrl_WithSystemTextJsonSettings_ReturnsCorrectUrl()
+    {
+        var result = PathCat.BuildUrl("/api",
+            new SystemTextJsonParams { Age = 16, Name = "Erik" },
+            new PathCatConfig
+            {
+                UseSystemTextJsonSerialization = true,
+                SystemTextJsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = null // To preserve the exact attribute names
+                }
+            });
+
+        Assert.Equal("/api?___NAME___=Erik&_age=16", result);
+    }
+
+    [Fact]
     public void BuildUrl_WithCombinedConfigurations_ReturnsCorrectUrl()
     {
         var result = PathCat.BuildUrl("/api", new
@@ -248,6 +267,91 @@ public class PathCatTests
         Assert.Equal("/api?userName=John&isAdmin=on&preferences[theme]=dark&preferences[showNotifications]=on&roles=user,editor", result);
     }
 
+    [Fact]
+    public void BuildUrl_WithSystemTextJsonSettings_CamelCaseNaming_ReturnsCorrectUrl()
+    {
+        var result = PathCat.BuildUrl("/api",
+            new { FirstName = "John", LastName = "Doe", Age = 30 },
+            new PathCatConfig
+            {
+                UseSystemTextJsonSerialization = true,
+                SystemTextJsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                }
+            });
+
+        Assert.Equal("/api?firstName=John&lastName=Doe&age=30", result);
+    }
+
+    [Fact]
+    public void BuildUrl_WithSystemTextJsonSettings_SnakeCaseNaming_ReturnsCorrectUrl()
+    {
+        var result = PathCat.BuildUrl("/api",
+            new { FirstName = "Jane", LastName = "Smith", IsActive = true },
+            new PathCatConfig
+            {
+                UseSystemTextJsonSerialization = true,
+                SystemTextJsonOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = new SnakeCaseNamingPolicy()
+                }
+            });
+
+        Assert.Equal("/api?first_name=Jane&last_name=Smith&is_active=True", result);
+    }
+
+    [Fact]
+    public void BuildUrl_WithSystemTextJsonSettings_IgnoreNullValues_ReturnsCorrectUrl()
+    {
+        var result = PathCat.BuildUrl("/api",
+            new { Name = "Alice", Age = 25, Address = (string)null },
+            new PathCatConfig
+            {
+                UseSystemTextJsonSerialization = true,
+                SystemTextJsonOptions = new JsonSerializerOptions
+                {
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                }
+            });
+
+        Assert.Equal("/api?Name=Alice&Age=25", result);
+    }
+
+    [Fact]
+    public void BuildUrl_WithSystemTextJsonSettings_CustomConverter_ReturnsCorrectUrl()
+    {
+        var result = PathCat.BuildUrl("/api",
+            new { Date = new DateTime(2023, 5, 15) },
+            new PathCatConfig
+            {
+                UseSystemTextJsonSerialization = true,
+                SystemTextJsonOptions = new JsonSerializerOptions
+                {
+                    Converters = { new CustomDateTimeConverter() }
+                }
+            });
+
+        Assert.Equal("/api?Date=2023-05-15", result);
+    }
+
+    [Fact]
+    public void BuildUrl_WithSystemTextJsonSettings_EnumAsString_ReturnsCorrectUrl()
+    {
+        var result = PathCat.BuildUrl("/api",
+            new { Status = UserStatus.Active },
+            new PathCatConfig
+            {
+                UseSystemTextJsonSerialization = true,
+                SystemTextJsonOptions = new JsonSerializerOptions
+                {
+                    Converters = { new JsonStringEnumConverter() }
+                }
+            });
+
+        Assert.Equal("/api?Status=Active", result);
+    }
+
     private class RequestParams
     {
         public string? Version { get; set; }
@@ -260,5 +364,43 @@ public class PathCatTests
     {
         public string? SubFilter { get; set; }
         public int Depth { get; set; }
+    }
+
+    private class SystemTextJsonParams
+    {
+        [JsonPropertyName("___NAME___")]
+        public string? Name { get; set; }
+
+        [JsonPropertyName("_age")]
+        public int Age { get; set; }
+    }
+
+
+    private class SnakeCaseNamingPolicy : JsonNamingPolicy
+    {
+        public override string ConvertName(string name)
+        {
+            return string.Concat(name.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLower();
+        }
+    }
+
+    private class CustomDateTimeConverter : JsonConverter<DateTime>
+    {
+        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return DateTime.Parse(reader.GetString());
+        }
+
+        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString("yyyy-MM-dd"));
+        }
+    }
+
+    private enum UserStatus
+    {
+        Active,
+        Inactive,
+        Suspended
     }
 }

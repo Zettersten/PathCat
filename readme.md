@@ -133,6 +133,36 @@ string url = PathCat.BuildUrl("/api", new { user = new { name = "Alice", age = 3
 // Result: "/api?user[name]=Alice&user[age]=30"
 ```
 
+### System.Text.Json Integration
+
+PathCat now supports System.Text.Json serialization settings for property names. This feature allows you to leverage existing System.Text.Json configurations in your URL building process.
+
+To use this feature:
+
+```csharp
+var config = new PathCatConfig
+{
+    UseSystemTextJsonSerialization = true,
+    SystemTextJsonOptions = new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Converters = { new JsonStringEnumConverter() }
+    }
+};
+
+var parameters = new
+{
+    UserName = "JohnDoe",
+    IsActive = true,
+    LastLoginDate = DateTime.Now,
+    UserType = UserType.Admin
+};
+
+string url = PathCat.BuildUrl("/api/users", parameters, config);
+// Result: "/api/users?userName=JohnDoe&isActive=true&lastLoginDate=2023-05-15T10:30:00&userType=Admin"
+```
+
 ## Performance
 
 PathCat is designed with performance in mind, utilizing `Span<T>` and `ReadOnlySpan<T>` for efficient string manipulation. It employs a pre-allocated buffer to minimize memory allocations during URL construction.

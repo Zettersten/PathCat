@@ -18,7 +18,15 @@
 		<RepositoryUrl>https://github.com/Zettersten/PathCat</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>url;builder;pathcat;dotnet;csharp</PackageTags>
-		<PackageReleaseNotes>Initial release of PathCat</PackageReleaseNotes>
+		<PackageReleaseNotes>
+			Version 1.0.1:
+			- Added System.Text.Json integration for URL building
+			- New config options: UseSystemTextJsonSerialization and SystemTextJsonOptions
+			- Respects JsonPropertyName attributes and JsonSerializerOptions
+			- Improved consistency with existing System.Text.Json configurations
+			- Enable with: config.UseSystemTextJsonSerialization = true
+			- Set options with: config.SystemTextJsonOptions = new JsonSerializerOptions { ... }
+		</PackageReleaseNotes>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>

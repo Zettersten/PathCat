@@ -1,10 +1,22 @@
-﻿namespace PathCat;
+﻿using System.Text.Json;
+
+namespace PathCat;
 
 /// <summary>
 /// Configuration options for PathCat.
 /// </summary>
 public sealed class PathCatConfig
 {
+    /// <summary>
+    /// Gets or sets whether to use System.Text.Json for property serialization.
+    /// </summary>
+    public bool UseSystemTextJsonSerialization { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the System.Text.Json serialization options.
+    /// </summary>
+    public JsonSerializerOptions? SystemTextJsonOptions { get; set; }
+
     /// <summary>
     /// Defines the format for boolean value serialization.
     /// </summary>

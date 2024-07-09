@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Text.Json;
 
 namespace PathCat;
 
@@ -8,6 +10,8 @@ namespace PathCat;
 /// </summary>
 internal static class ParameterDictionary
 {
+    private static readonly JsonSerializerOptions DefaultJsonSerializerOptions = new();
+
     /// <summary>
     /// Converts an object to a dictionary of parameters.
     /// </summary>
@@ -25,12 +29,54 @@ internal static class ParameterDictionary
                 result[kvp.Key] = kvp.Value;
             }
         }
+        else if (config.UseSystemTextJsonSerialization)
+        {
+            FillDictionaryUsingSystemTextJson(result, parameters, config);
+        }
         else
         {
             FillDictionary(result, string.Empty, parameters, config);
         }
 
         return result;
+    }
+
+    [RequiresUnreferencedCode("Calls System.Text.Json.JsonSerializer.SerializeToElement<TValue>(TValue, JsonSerializerOptions)")]
+    [RequiresDynamicCode("Calls System.Text.Json.JsonSerializer.SerializeToElement<TValue>(TValue, JsonSerializerOptions)")]
+    private static void FillDictionaryUsingSystemTextJson(Dictionary<string, object> dict, object parameters, PathCatConfig config)
+    {
+        var options = config.SystemTextJsonOptions ?? DefaultJsonSerializerOptions;
+        var jsonElement = JsonSerializer.SerializeToElement(parameters, options);
+
+        if (jsonElement.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in jsonElement.EnumerateObject())
+            {
+                var value = GetValueFromJsonElement(property.Value);
+
+                if (value is null)
+                {
+                    continue;
+                }
+
+                dict[property.Name] = value;
+            }
+        }
+    }
+
+    private static object? GetValueFromJsonElement(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => element.GetString() ?? string.Empty,
+            JsonValueKind.Number => element.TryGetInt64(out long longValue) ? longValue : element.GetDouble(),
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            JsonValueKind.Null => null,
+            JsonValueKind.Array => element.EnumerateArray().Select(GetValueFromJsonElement).ToList(),
+            JsonValueKind.Object => element.EnumerateObject().ToDictionary(p => p.Name, p => GetValueFromJsonElement(p.Value)),
+            _ => element.ToString()
+        };
     }
 
     private static void FillDictionary(Dictionary<string, object> dict, string prefix, object obj, PathCatConfig config)

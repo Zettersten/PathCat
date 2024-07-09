@@ -27,6 +27,7 @@ public static class PathCat
     /// </summary>
     /// <param name="pathOrUrl">The absolute or relative path with placeholders for parameters.</param>
     /// <param name="parameters">The parameters to replace in the path and append as query parameters.</param>
+    /// <param name="config">Configuration options for PathCat.</param>
     /// <returns>The combined URL.</returns>
     /// <exception cref="ArgumentException">Thrown when the path or URL is not well-formed.</exception>
     public static string BuildUrl(string pathOrUrl, object? parameters = null, PathCatConfig? config = null)

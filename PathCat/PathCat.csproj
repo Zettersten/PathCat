@@ -7,7 +7,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>latest</LangVersion>
 		<PackageId>PathCat</PackageId>
-		<Version>1.0.0</Version>
+		<Version>$(GITHUB_REF_NAME.TrimStart('v'))</Version>
 		<Authors>Erik Zettersten</Authors>
 		<Company>Erik Zettersten</Company>
 		<Product>PathCat</Product>

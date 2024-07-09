@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<LangVersion>latest</LangVersion>
+		<PackageId>PathCat</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Erik Zettersten</Authors>
+		<Company>Erik Zettersten</Company>
+		<Product>PathCat</Product>
+		<Description>PathCat is a powerful and flexible URL building library for .NET, inspired by the popular JavaScript library pathcat. It provides an intuitive way to construct URLs with dynamic parameters, offering extensive configuration options to suit various serialization needs.</Description>
+		<Copyright>Copyright © 2024 Erik Zettersten</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/Zettersten/PathCat</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Zettersten/PathCat</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>url;builder;pathcat;dotnet;csharp</PackageTags>
+		<PackageReleaseNotes>Initial release of PathCat</PackageReleaseNotes>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PublishAot>false</PublishAot>
+		<IsAotCompatible>true</IsAotCompatible>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\icon.png" Pack="true" PackagePath="\" />
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>portable</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
+
+</Project>

@@ -19,7 +19,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>url;builder;pathcat;dotnet;csharp</PackageTags>
 		<PackageReleaseNotes>
-			Version 1.0.1:
+			Version 1.0.2:
 			- Added System.Text.Json integration for URL building
 			- New config options: UseSystemTextJsonSerialization and SystemTextJsonOptions
 			- Respects JsonPropertyName attributes and JsonSerializerOptions

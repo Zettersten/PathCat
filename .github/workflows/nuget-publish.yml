@@ -20,13 +20,13 @@ jobs:
       run: dotnet restore
     
     - name: Build
-      run: dotnet build --no-restore --configuration Release
+      run: dotnet build --configuration Release
     
     - name: Test with XUnit
-      run: dotnet test ./PathCat.Tests/PathCat.Tests.csproj --no-build --verbosity normal --logger "console;verbosity=detailed"
+      run: dotnet test ./PathCat.Tests/PathCat.Tests.csproj --configuration Release --no-build --verbosity normal
     
     - name: Pack
-      run: dotnet pack ./PathCat/PathCat.csproj --no-build --configuration Release -o ./nupkg
+      run: dotnet pack ./PathCat/PathCat.csproj --configuration Release --no-build -o ./nupkg
     
     - name: Push to NuGet
       run: dotnet nuget push ./nupkg/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}} --skip-duplicate

@@ -1,9 +1,8 @@
-<img src="https://raw.githubusercontent.com/Zettersten/PathCat/main/icon.png" alt="PathCat Icon" width="100" height="100">
-
+![PathCat Icon](https://raw.githubusercontent.com/Zettersten/PathCat/main/icon.png)
 
 # PathCat 🐾
 
-[![NuGet Badge](https://buildstats.info/nuget/PathCat)](https://www.nuget.org/packages/PathCat/)
+[![NuGet version](https://badge.fury.io/nu/PathCat.svg)](https://badge.fury.io/nu/PathCat)
 
 PathCat is a powerful and flexible URL building library for .NET, inspired by the popular JavaScript library [pathcat](https://github.com/alii/pathcat). It provides an intuitive way to construct URLs with dynamic parameters, offering extensive configuration options to suit various serialization needs.
 
